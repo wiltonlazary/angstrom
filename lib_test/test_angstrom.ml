@@ -1,40 +1,5 @@
 open Angstrom
 
-module Alcotest = struct
-  include Alcotest
-
-  let result (type a) (type e) a e =
-    let (module A: TESTABLE with type t = a) = a in
-    let (module E: TESTABLE with type t = e) = e in
-    let module M = struct
-      type t = (a, e) Result.result
-      let pp fmt t = match t with
-        | Result.Ok    t -> Format.fprintf fmt "Ok @[(%a)@]" A.pp t
-        | Result.Error e -> Format.fprintf fmt "Error @[(%a)@]" E.pp e
-      let equal x y = match x, y with
-        | Result.Ok    x, Result.Ok    y -> A.equal x y
-        | Result.Error x, Result.Error y -> E.equal x y
-        | _             , _              -> false
-    end in
-    (module M: TESTABLE with type t = M.t)
-
-  let none (type a) =
-    let module M = struct
-      type t = a
-      let pp fmt _ = Format.pp_print_string fmt "Alcotest.none"
-      let equal _ _ = false
-    end in
-    (module M: TESTABLE with type t = M.t)
-
-  let any (type a) =
-    let module M = struct
-      type t = a
-      let pp fmt _ = Format.pp_print_string fmt "Alcotest.any"
-      let equal _ _ = true
-    end in
-    (module M: TESTABLE with type t = M.t)
-end
-
 let check ?size f p is =
   let open Buffered in
   let state =
@@ -51,7 +16,7 @@ let check_ok ?size ~msg test p is r =
 
 let check_fail ?size ~msg p is =
   let r = Result.Error "" in
-  check ?size (fun result -> Alcotest.(check (result none any)) msg r result)
+  check ?size (fun result -> Alcotest.(check (result reject pass)) msg r result)
     p is
 
 let check_c  ?size ~msg p is r = check_ok ?size ~msg Alcotest.char            p is r

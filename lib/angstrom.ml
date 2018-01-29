@@ -31,7 +31,7 @@
     POSSIBILITY OF SUCH DAMAGE.
   ----------------------------------------------------------------------------*)
 
-module Bigarray = struct 
+module Bigarray = struct
   (* Do not access Bigarray operations directly. If anything's needed, refer to
    * the internal Bigstring module. *)
 end
@@ -42,7 +42,7 @@ type bigstring = Bigstring.t
 module Unbuffered = struct
   include Parser
 
-  type more = More.t = 
+  type more = More.t =
     | Complete
     | Incomplete
 end
@@ -149,7 +149,7 @@ let rec prompt input pos fail succ =
    * [prompt] should call [fail]. Otherwise (in the case where the input
    * hasn't grown but [more = Incomplete] just prompt again. *)
   let parser_uncommitted_bytes = Input.parser_uncommitted_bytes input in
-  let parser_committed_bytes   = Input.parser_committed_bytes   input in 
+  let parser_committed_bytes   = Input.parser_committed_bytes   input in
   (* The continuation should not hold any references to input above. *)
   let continue input ~off ~len more =
     if len < parser_uncommitted_bytes then
@@ -361,7 +361,7 @@ let rec count_while1 ~f ~with_buffer =
     (* Check if the loop terminated because it reached the end of the input
      * buffer. If so, then prompt for additional input and continue. *)
     if len < 1
-    then 
+    then
       if pos < input_len || more = Complete
       then fail input pos more [] "count_while1"
       else

@@ -230,7 +230,12 @@ let end_of_input =
 let advance n =
   if n < 0
   then fail "advance"
-  else { run = fun input pos more _fail succ -> succ input (pos + n) more () }
+  else { run =
+    fun input pos more fail succ ->
+      if pos + n <= Input.length input
+      then succ input (pos + n) more ()
+      else fail input pos more [] "advance"
+  }
 
 let pos =
   { run = fun input pos more _fail succ -> succ input pos more pos }
